@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+       Copyright 2009-2012 the original author or authors.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- Command实体类映射文件名称 -->
+<mapper namespace="CommandContent">
+  	 <!-- resultMap
+  	 type 需要映射实体类的全路径
+  	 id	 resultMap的名称  便于下面的sql语句将数据库中的数据以指定的方法封装到实体类中个对应的属性中
+  	 	id column 数据表中主键的名称 
+  	 		jdbcType 对应的数据类型
+  	 		property 实体类中对应的属性
+  	 	result column 数据表中其他键的名称
+  	  -->	
+	 <resultMap type="yan.jiang.bean.CommandContent" id="CommandContentResult">
+	   <id column="ID" jdbcType="INTEGER" property="id"/>
+	   <result column="CONTENT" jdbcType="VARCHAR" property="content"/>
+	   <result column="COMMAND_ID" jdbcType="VARCHAR" property="commandId"/>
+	 </resultMap>
+  	
+
+  
+</mapper>

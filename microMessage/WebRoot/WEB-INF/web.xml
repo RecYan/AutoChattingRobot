@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
+  <display-name>microMessage</display-name>
+  
+  <!-- servlet配置 -->
+  <servlet>
+  	<servlet-name>ListServlet</servlet-name>
+  	<servlet-class>yan.jiang.servlet.ListServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>ListServlet</servlet-name>
+  	<url-pattern>/List.action</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+  	<servlet-name>DeleteOneServlet</servlet-name>
+  	<servlet-class>yan.jiang.servlet.DeleteOneServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DeleteOneServlet</servlet-name>
+    <url-pattern>/DeleteOneServlet</url-pattern>
+  </servlet-mapping>
+ 
+  <servlet>
+    <servlet-name>DeleteBatchServlet</servlet-name>
+    <servlet-class>yan.jiang.servlet.DeleteBatchServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DeleteBatchServlet</servlet-name>
+    <url-pattern>/DeleteBatchServlet.action</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>InitServlet</servlet-name>
+    <servlet-class>yan.jiang.servlet.InitServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>InitServlet</servlet-name>
+    <url-pattern>/InitServlet.action</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>AutoReplyServlet</servlet-name>
+    <servlet-class>yan.jiang.servlet.AutoReplyServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AutoReplyServlet</servlet-name>
+    <url-pattern>/AutoReplyServlet.action</url-pattern>
+  </servlet-mapping>
+  
+  
+</web-app>

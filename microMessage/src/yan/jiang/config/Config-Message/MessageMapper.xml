@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+       Copyright 2009-2012 the original author or authors.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- Message实体类映射文件名称 -->
+<mapper namespace="Message">
+  	 <!-- resultMap
+  	 type 需要映射实体类的全路径
+  	 id	 resultMap的名称  便于下面的sql语句将数据库中的数据以指定的方法封装到实体类中个对应的属性中
+  	 	id column 数据表中主键的名称 
+  	 		jdbcType 对应的数据类型
+  	 		property 实体类中对应的属性
+  	 	result column 数据表中其他键的名称
+  	  -->	
+	 <resultMap type="yan.jiang.bean.Message" id="MessageResult">
+	   <id column="ID" jdbcType="INTEGER" property="id"/>
+	   <result column="COMMAND" jdbcType="VARCHAR" property="command"/>
+	   <result column="DESCRIPTION" jdbcType="VARCHAR" property="description"/>
+	   <result column="CONTENT" jdbcType="VARCHAR" property="content"/>
+	 </resultMap>
+  	 
+  	 <!-- sql标签
+  	 		便于管理 解耦
+  	 		<include refid="columns"/> ==>sql语句中引用sql标签
+  	  -->
+  	 <sql id="columns">ID,COMMAND,DESCRIPTION,CONTENT</sql>
+  	 <!-- select
+  	 		id sql语句的别名
+  	 		parameterType 动态织入的sql语句参数
+  	 			只能由一 个==>将对个数据进行封装==>Message对象<类型+包名> 
+  	 		resultMap 数据封装的方法
+  	 		where:标签
+  	  -->
+	 <select id="queryMessageList" parameterType="yan.jiang.bean.Message" resultMap="MessageResult">
+	 	select <include refid="columns"/> from message 
+	 	<where>
+		   <!-- 动态拼接sql
+		   		test 写插入的条件
+		   			OGNL语句： 其中&&==>and
+		   					   ""==>&quot;&quot; 转义字符
+		   					   			!"".equals(command.trim())
+		   		#{command} ==>sql中的占位符 自动将实体中对应的属性加载到sql对应的占位符上 实现sql拼接
+		   								paramList.add(command);	
+		   		实现模糊查询拼接时  mysql需要使用空格凭借    
+		    -->
+		   <if test="command !=null and !&quot;&quot;.equals(command.trim())">
+		   		and COMMAND=#{command}
+		   </if>
+		   <if test="description !=null and !&quot;&quot;.equals(description.trim())">
+		   		and DESCRIPTION like '%' #{description} '%'
+		   </if>
+	   </where>	   
+	 </select>
+	 
+	 <!-- delete
+	 		id sql语句别名
+	 		parameterType 占位符需要设置的参数的类型
+	 						若为基本数据类型  
+	 						若为自定义数据类型  ==>实体类的全路径
+	 						数据库类型 与 java数据类型的对应
+	 						int ==> int
+	 						varchar ==> String
+	 		#{_parameter} 占位符需要设置的参数
+	 						基本数据类型或String ==> _parameter
+	 						自定义数据类型  ==> 实体类中对应的属性				
+	  -->
+	 <delete id="deleteOne" parameterType="int">
+	 		delete from message where ID = #{_parameter}
+	 </delete>
+	 <!-- 
+	 		separator 批量删除时候 常用到","分隔符
+	  -->
+	 <delete id="deleteBatch" parameterType="java.util.List">
+	 		delete from message where ID in(
+	 			<foreach collection="list" item="item" separator=",">
+	 				#{item}
+	 			</foreach>
+	 		)
+	 </delete>
+
+  
+</mapper>

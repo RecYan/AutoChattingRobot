@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+       Copyright 2009-2012 the original author or authors.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- Command实体类映射文件名称 -->
+<mapper namespace="Command">
+  	 <!-- resultMap
+  	 type 需要映射实体类的全路径
+  	 id	 resultMap的名称  便于下面的sql语句将数据库中的数据以指定的方法封装到实体类中个对应的属性中
+  	 	id  数据表中主键的名称 
+  	 		jdbcType 对应的数据类型
+  	 		property 实体类中对应的属性
+  	 	result  数据表中其他键的名称
+  	 **[column]** ==> select语句中返回的结果集的列称 而不是数据库中表的列名
+  	 				*参考JDBC中ResultSet中的set方法
+  	 					*id column="C_ID" ==> select a.ID C_ID
+  	 	<collection property="contentList"  resultMap="CommandContent.CommandContentResult"/>
+  	 	一对多查询关系
+  	 	多表关联==>主表引用包含附表的集合
+  	 	resultMap="CommandContent.CommandContentResult" ==> 表示引用附表的映射关系【表的名称空间+映射的id】
+  	  -->	
+	 <resultMap type="yan.jiang.bean.Command" id="CommandResult">
+	   <id column="C_ID" jdbcType="INTEGER" property="id"/>
+	   <result column="NAME" jdbcType="VARCHAR" property="name"/>
+	   <result column="DESCRIPTION" jdbcType="VARCHAR" property="description"/>
+	   <collection property="contentList" resultMap="CommandContent.CommandContentResult"/>
+	 </resultMap>
+  	
+  	 <!-- select
+  	 		id sql语句的别名
+  	 		parameterType 动态织入的sql语句参数
+  	 			只能由一 个==>将对个数据进行封装==>Message对象<类型+包名> 
+  	 		resultMap 数据封装的方法
+  	 		left join command_content b ==>关联子表 并将子表期别名为b
+  	 		on a.ID=b.COMMAND_ID  ==>关联条件
+  	  -->
+	 <select id="queryCommandList" parameterType="yan.jiang.bean.Command" resultMap="CommandResult">
+	 	select a.ID C_ID,a.NAME,a.DESCRIPTION,b.ID,b.CONTENT,b.COMMAND_ID
+	 	from command a left join command_content b
+	 	on a.ID=b.COMMAND_ID 
+	   <!-- 动态拼接sql
+	   		test 写插入的条件
+	   			OGNL语句： 其中&&==>and
+	   					   ""==>&quot;&quot; 转义字符
+	   					   			!"".equals(command.trim())
+	   		#{command} ==>sql中的占位符 自动将实体中对应的属性加载到sql对应的占位符上 实现sql拼接
+	   								paramList.add(command);	
+	   		实现模糊查询拼接时  mysql需要使用空格凭借    
+	    -->
+	   <if test="name !=null and !&quot;&quot;.equals(name.trim())">
+	   		and a.NAME=#{name}
+	   </if>
+	   <if test="description !=null and !&quot;&quot;.equals(description.trim())">
+	   		and a.DESCRIPTION like '%' #{description} '%'
+	   </if>	   
+	 </select>
+	 
+	 
+
+  
+</mapper>
