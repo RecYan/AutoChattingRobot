@@ -1,27 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-       Copyright 2009-2012 the original author or authors.
-
-       Licensed under the Apache License, Version 2.0 (the "License");
-       you may not use this file except in compliance with the License.
-       You may obtain a copy of the License at
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-       Unless required by applicable law or agreed to in writing, software
-       distributed under the License is distributed on an "AS IS" BASIS,
-       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-       See the License for the specific language governing permissions and
-       limitations under the License.
-
--->
-
 <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- Message实体类映射文件名称 -->
-<mapper namespace="Message">
+<mapper namespace="yan.jiang.dao.IMessage">
   	 <!-- resultMap
   	 type 需要映射实体类的全路径
   	 id	 resultMap的名称  便于下面的sql语句将数据库中的数据以指定的方法封装到实体类中个对应的属性中
@@ -49,7 +31,7 @@
   	 		resultMap 数据封装的方法
   	 		where:标签
   	  -->
-	 <select id="queryMessageList" parameterType="yan.jiang.bean.Message" resultMap="MessageResult">
+	 <select id="queryMessageList" parameterType="java.util.Map" resultMap="MessageResult">
 	 	select <include refid="columns"/> from message 
 	 	<where>
 		   <!-- 动态拼接sql
@@ -67,8 +49,37 @@
 		   <if test="description !=null and !&quot;&quot;.equals(description.trim())">
 		   		and DESCRIPTION like '%' #{description} '%'
 		   </if>
-	   </where>	   
+	   </where>
+	   order by ID limit #{page.dbIndex},#{page.dbNumber}	   
 	 </select>
+	 
+	 <select id="count"  parameterType="yan.jiang.bean.Message" resultType="int">
+  	select count(*) from MESSAGE
+    <where>
+    	<if test="command != null and !&quot;&quot;.equals(command.trim())">
+	    	and COMMAND=#{command}
+	    </if>
+	    <if test="description != null and !&quot;&quot;.equals(description.trim())">
+	    	and DESCRIPTION like '%' #{description} '%'
+	    </if>
+    </where>
+  </select>
+  
+  <select id="queryMessageListByPage" parameterType="java.util.Map" resultMap="MessageResult">
+    select <include refid="columns"/> from MESSAGE
+    <where>
+    	<if test="message.command != null and !&quot;&quot;.equals(message.command.trim())">
+	    	and COMMAND=#{message.command}
+	    </if>
+	    <if test="message.description != null and !&quot;&quot;.equals(message.description.trim())">
+	    	and DESCRIPTION like '%' #{message.description} '%'
+	    </if>
+    </where>
+    order by ID
+  </select>
+	 
+	 
+	 
 	 
 	 <!-- delete
 	 		id sql语句别名

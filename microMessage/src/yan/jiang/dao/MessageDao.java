@@ -3,6 +3,7 @@ package yan.jiang.dao;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 
@@ -15,10 +16,10 @@ import yan.jiang.db.DBAccess;
  *
  */
 public class MessageDao {
-	/*
-	 * 根据条件查询数据列表
+	/**
+	 * 根据查询条件查询消息列表
 	 */
-	public List<Message> queryMessageList(String command,String description) {
+	public List<Message> queryMessageList(Map<String, Object> map) {
 		DBAccess dbAccess = new DBAccess();
 		SqlSession sqlSession = null;
 		List<Message> messageList= new ArrayList<Message>();
@@ -26,18 +27,62 @@ public class MessageDao {
 		try {
 			sqlSession = dbAccess.getSqlSession();
 			
-			//通过封装对象思想  ==> 实现对个参数的查询
-			Message message = new Message();
-            message.setCommand(command);
-            message.setDescription(description);
+			/*通过sqlSesion操作sql语句
+			messageList = sqlSession.selectList("Message.queryMessageList",message);*/
+            //***通过接口式编程 解决上述语句易出现的问题 通过接口来代言sql语句***
+            IMessage imessage = sqlSession.getMapper(IMessage.class);
+            //相当于 源码中的 sqlSession.selectList(nameSpace.id,parameter) ==> 动态代理实现
+            messageList = imessage.queryMessageList(map);
             
-			//通过sqlSesion操作sql语句
-			messageList = sqlSession.selectList("Message.queryMessageList",message);
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
 			if(sqlSession!=null) {
+				sqlSession.close();
+			}
+		}
+		return messageList;
+	}
+	/**
+	 * 根据查询条件查询消息列表的条数
+	 */
+	public int count(Message message) {
+		DBAccess dbAccess = new DBAccess();
+		SqlSession sqlSession = null;
+		int result = 0;
+		try {
+			sqlSession = dbAccess.getSqlSession();
+			// 通过sqlSession执行SQL语句
+			IMessage imessage = sqlSession.getMapper(IMessage.class);
+			result = imessage.count(message);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if(sqlSession != null) {
+				sqlSession.close();
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * 根据查询条件分页查询消息列表
+	 */
+	public List<Message> queryMessageListByPage(Map<String,Object> map) {
+		DBAccess dbAccess = new DBAccess();
+		List<Message> messageList = new ArrayList<Message>();
+		SqlSession sqlSession = null;
+		try {
+			sqlSession = dbAccess.getSqlSession();
+			// 通过sqlSession执行SQL语句
+			IMessage imessage = sqlSession.getMapper(IMessage.class);
+			messageList = imessage.queryMessageListByPage(map);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if(sqlSession != null) {
 				sqlSession.close();
 			}
 		}

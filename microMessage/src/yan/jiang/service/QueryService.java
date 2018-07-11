@@ -1,6 +1,8 @@
 package yan.jiang.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import yan.jiang.bean.Command;
@@ -8,6 +10,7 @@ import yan.jiang.bean.CommandContent;
 import yan.jiang.bean.Message;
 import yan.jiang.dao.CommandDao;
 import yan.jiang.dao.MessageDao;
+import yan.jiang.entity.Page;
 import yan.jiang.util.Iconst;
 
 /**
@@ -22,11 +25,39 @@ public class QueryService {
 	 * @param description
 	 * @return 返回查询结果
 	 */
-	public List<Message> queryMessageList(String command,String description) {
+	public List<Message> queryMessageList(String command,String description, Page page) {
 		
+		//组织消息对象
+		Message message = new Message();
+		message.setCommand(command);
+		message.setDescription(description);
 		MessageDao messageDao = new MessageDao();
-		List<Message> queryMessageList = messageDao.queryMessageList(command, description);
+		//根据条件查询总条数
+		int totalNumber = messageDao.count(message);
+		//组织分页查询参数
+		page.setTotalNumber(totalNumber);
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("message", message);
+		map.put("page",page);
+		
+		List<Message> queryMessageList = messageDao.queryMessageList(map);
 		return queryMessageList;
+	}
+	
+	/**
+	 * 根据查询条件分页查询消息列表 ==>拦截器
+	 */
+	public List<Message> queryMessageListByPage(String command,String description,Page page) {
+		Map<String,Object> map = new HashMap<String, Object>();
+		// 组织消息对象
+		Message message = new Message();
+		message.setCommand(command);
+		message.setDescription(description);
+		map.put("message", message);
+		map.put("page", page);
+		MessageDao messageDao = new MessageDao();
+		// 分页查询并返回结果
+		return messageDao.queryMessageListByPage(map);
 	}
 	
 	/**
